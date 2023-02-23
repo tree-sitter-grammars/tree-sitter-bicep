@@ -27,7 +27,8 @@
     "build": "tree-sitter generate && node-gyp build",
     "test": "tree-sitter test && script/parse-examples",
     "parse": "tree-sitter parse",
-    "test-windows": "tree-sitter test"
+    "test-windows": "tree-sitter test",
+    "lint": "eslint grammar.js"
   },
   "tree-sitter": [
     {
