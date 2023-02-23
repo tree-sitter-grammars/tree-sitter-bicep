@@ -5,4 +5,4 @@
 
 Bicep grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter).
 
-Adapted from [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)
+Adapted from [the official spec](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)
