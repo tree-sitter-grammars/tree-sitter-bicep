@@ -1,0 +1,43 @@
+{
+  "name": "tree-sitter-bicep",
+  "version": "0.0.1",
+  "description": "Bicep grammar for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "bicep"
+  ],
+  "author": "Amaan Qureshi <amaanq12@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amaanq/tree-sitter-bicep/issues"
+  },
+  "homepage": "https://github.com/amaanq/tree-sitter-bicep#readme",
+  "dependencies": {
+    "nan": "^2.15.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.32.0",
+    "eslint-config-google": "^0.14.0",
+    "tree-sitter-cli": "^0.20.1"
+  },
+  "repository": "https://github.com/amaanq/tree-sitter-bicep",
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp build",
+    "test": "tree-sitter test && script/parse-examples",
+    "parse": "tree-sitter parse",
+    "test-windows": "tree-sitter test"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.bicep",
+      "file-types": [
+        "bicep"
+      ],
+      "highlights": [
+        "queries/highlights.scm"
+      ]
+    }
+  ]
+}
