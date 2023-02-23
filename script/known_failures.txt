@@ -1,0 +1,13 @@
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.diagnostics.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.formatted.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.ir.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.sourcemap.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.symbols.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.syntax.bicep
+examples/bicep/src/Bicep.Core.Samples/Files/Variables_LF/main.tokens.bicep
+examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/issue5455/nested_StorageRoleDeploymentResource.bicep
+examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/nested-outer/nested_testnested.bicep
+examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/userdefinedfunctions/main.bicep
+examples/bicep/src/Bicep.MSBuild.E2eTests/examples/fail/fail.bicep
+examples/bicep/src/vscode-bicep/src/test/e2e/examples/files/invalid-resources/main.bicep
