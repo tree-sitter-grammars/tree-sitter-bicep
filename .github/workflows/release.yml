@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm test
+
+  release:
+    name: release
+    if: ${{ github.ref == 'refs/heads/master' }}
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: simple
+          package-name: tree-sitter-bicep
+      - uses: actions/checkout@v3
+      - name: Tag stable versions and update versions in files
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          version="${{ steps.release.outputs.new_tag_name }}"
+          version="${version#v}"  # Remove the "v" prefix
+          repo_name="${{ github.repository }}"
+
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github-actions/release-please-action.git"
+          git tag -d stable || true
+          git push origin :stable || true
+          git tag -a stable -m "Last Stable Release"
+          git push origin stable
+
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$version\"/g" package.json
+          sed -i "s/version = \"[^\"]*\"/version = \"$version\"/g" Cargo.toml
+          sed -i "s/$repo_name = \"[^\"]*\"/$repo_name = \"$version\"/g" bindings/rust/README.md
