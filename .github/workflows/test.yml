@@ -1,0 +1,12 @@
+name: Test Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print a message
+        run: echo "This is a test."
