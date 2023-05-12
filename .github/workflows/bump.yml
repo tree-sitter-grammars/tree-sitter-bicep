@@ -1,0 +1,37 @@
+name: Amend Release PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  amend:
+    if: ${{ github.actor == 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fetch PR data
+        id: pr_data
+        run: |
+          PR_DATA=$(gh pr view https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }} --json title -q ".title")
+          echo "::set-output name=pr_title::$PR_DATA"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update versions
+        run: |
+          version=$(echo "${{ steps.pr_data.outputs.pr_title }}" | grep -oP '(?<=release ).*$')
+          repo_name="${{ github.repository }}"
+
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$version\"/g" package.json
+          sed -i "s/version = \"[^\"]*\"/version = \"$version\"/g" Cargo.toml
+          sed -i "s/$repo_name = \"[^\"]*\"/$repo_name = \"$version\"/g" bindings/rust/README.md
+
+          git add package.json Cargo.toml bindings/rust/README.md
+          git commit --amend --no-edit
+          git push --force-with-lease
