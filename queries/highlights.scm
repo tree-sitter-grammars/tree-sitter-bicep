@@ -84,11 +84,11 @@
   (_))
 
 (call_expression
-  function: (_) 
+  function: (_)
   (arguments (identifier) @parameter))
 
 (call_expression
-  function: (_) 
+  function: (_)
   (arguments (member_expression object: (identifier) @parameter)))
 
 ; Variables

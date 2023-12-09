@@ -1,4 +1,61 @@
 ==============================================
+Simple import statement
+==============================================
+
+import { foo } from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple alias import statement
+==============================================
+
+import { foo as bar } from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple wildcard import statement
+==============================================
+
+import * as bar from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple provider import
+==============================================
+
+provider 'sys@1.0.0'
+
+---
+
+(infrastructure
+  (import_statement
+    (import_string
+      (import_name)
+      (import_version))))
+
+==============================================
 Simple variable assignment
 ==============================================
 
@@ -7,11 +64,9 @@ var foo = null
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (null)))
-
-
+  (variable_declaration
+    (identifier)
+    (null)))
 
 ==============================================
 Simple string assignment
@@ -22,12 +77,10 @@ var foo = 'aaa'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content))))
 
 ==============================================
 Empty string assignment
@@ -38,11 +91,9 @@ var foo = ''
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string)))
-
-
+  (variable_declaration
+    (identifier)
+    (string)))
 
 ==============================================
 String escape sequence
@@ -53,14 +104,12 @@ var foo = 'a\'a'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content)
-          (escape_sequence)
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (escape_sequence)
+      (string_content))))
 
 ==============================================
 Multiline string assignment
@@ -71,12 +120,10 @@ var foo = '''aaa'''
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (multiline_string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (multiline_string_content))))
 
 ==============================================
 Object assignment
@@ -90,18 +137,16 @@ var foo = {
 ---
 
 (infrastructure
-      (variable_declaration
+  (variable_declaration
+    (identifier)
+    (object
+      (object_property
         (identifier)
-        (object
-          (object_property
-            (identifier)
-            (string
-              (string_content)))
-          (object_property
-            (identifier)
-            (boolean)))))
-
-
+        (string
+          (string_content)))
+      (object_property
+        (identifier)
+        (boolean)))))
 
 ==============================================
 For loop
@@ -122,38 +167,36 @@ resource sa 'Microsoft.Storage/storageAccounts@2019-06-01' = [for storageName in
 ---
 
 (infrastructure
-      (resource_declaration
-        (identifier)
-        (string
-          (string_content))
-        (for_statement
+  (resource_declaration
+    (identifier)
+    (string
+      (string_content))
+    (for_statement
+      (identifier)
+      (identifier)
+      (object
+        (object_property
           (identifier)
+          (identifier))
+        (object_property
+          (identifier)
+          (identifier))
+        (object_property
           (identifier)
           (object
             (object_property
               (identifier)
-              (identifier))
+              (identifier))))
+        (object_property
+          (identifier)
+          (string
+            (string_content)))
+        (object_property
+          (identifier)
+          (object
             (object_property
               (identifier)
-              (identifier))
-            (object_property
-              (identifier)
-              (object
-                (object_property
-                  (identifier)
-                  (identifier))))
-            (object_property
-              (identifier)
-              (string
-                (string_content)))
-            (object_property
-              (identifier)
-              (object
-                (object_property
-                  (identifier)
-                  (boolean))))))))
-
-
+              (boolean))))))))
 
 ==============================================
 Numbers
@@ -166,17 +209,15 @@ var mvVar3 = 0
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (number))
-      (variable_declaration
-        (identifier)
-        (number))
-      (variable_declaration
-        (identifier)
-        (number)))
-
-
+  (variable_declaration
+    (identifier)
+    (number))
+  (variable_declaration
+    (identifier)
+    (number))
+  (variable_declaration
+    (identifier)
+    (number)))
 
 ==============================================
 Booleans
@@ -188,14 +229,12 @@ var myVar2 = true
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (boolean))
-      (variable_declaration
-        (identifier)
-        (boolean)))
-
-
+  (variable_declaration
+    (identifier)
+    (boolean))
+  (variable_declaration
+    (identifier)
+    (boolean)))
 
 ==============================================
 Arrays
@@ -220,25 +259,23 @@ var myMixedArray = [
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (array
-          (number)
-          (number)
-          (number)))
-      (variable_declaration
-        (identifier)
-        (array))
-      (variable_declaration
-        (identifier)
-        (array
-          (identifier)
-          (string
-            (string_content))
-          (boolean)
-          (number))))
-
-
+  (variable_declaration
+    (identifier)
+    (array
+      (number)
+      (number)
+      (number)))
+  (variable_declaration
+    (identifier)
+    (array))
+  (variable_declaration
+    (identifier)
+    (array
+      (identifier)
+      (string
+        (string_content))
+      (boolean)
+      (number))))
 
 ==============================================
 Nested resource
@@ -253,23 +290,21 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
 ---
 
 (infrastructure
-      (resource_declaration
-        (identifier)
-        (string
-          (string_content))
-        (object
-          (object_property
-            (resource_declaration
+  (resource_declaration
+    (identifier)
+    (string
+      (string_content))
+    (object
+      (object_property
+        (resource_declaration
+          (identifier)
+          (string
+            (string_content))
+          (object
+            (object_property
               (identifier)
               (string
-                (string_content))
-              (object
-                (object_property
-                  (identifier)
-                  (string
-                    (string_content)))))))))
-
-
+                (string_content)))))))))
 
 ==============================================
 Function call on property
@@ -280,17 +315,15 @@ var a = storageAccountVulnerabilityAssessments.listKeys().foo
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
+  (variable_declaration
+    (identifier)
+    (member_expression
+      (call_expression
         (member_expression
-          (call_expression
-            (member_expression
-              (identifier)
-              (property_identifier))
-            (arguments))
-          (property_identifier))))
-
-
+          (identifier)
+          (property_identifier))
+        (arguments))
+      (property_identifier))))
 
 ==============================================
 Unicode escape sequence
@@ -301,12 +334,10 @@ var surrogate_codepoint = '\u{10437}'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (escape_sequence))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (escape_sequence))))
 
 ==============================================
 Multiline string with quote
@@ -317,13 +348,11 @@ var foo = '''hello'world'''
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (multiline_string_content)
-          (multiline_string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (multiline_string_content)
+      (multiline_string_content))))
 
 ==============================================
 String containing dollar
@@ -334,14 +363,12 @@ var foo = 'about $3 fiddy'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content)
-          (string_content)
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (string_content)
+      (string_content))))
 
 ==============================================
 String starting with dollar
@@ -352,13 +379,11 @@ var foo = '$3 fiddy'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content)
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (string_content))))
 
 ==============================================
 String ending with dollar
@@ -369,13 +394,11 @@ var foo = 'mucho $'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content)
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (string_content))))
 
 ==============================================
 String in interpolation
@@ -386,15 +409,13 @@ var stringInString = 'abc${'def'}'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (interpolation
         (string
-          (string_content)
-          (interpolation
-            (string
-              (string_content))))))
-
-
+          (string_content))))))
 
 ==============================================
 String literal with starting comment
@@ -405,12 +426,10 @@ var a = '/*'
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content))))
 
 ==============================================
 Multiline string literal with starting comment
@@ -421,12 +440,10 @@ var a = '''/*'''
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (string
-          (multiline_string_content))))
-
-
+  (variable_declaration
+    (identifier)
+    (string
+      (multiline_string_content))))
 
 ==============================================
 Mixed array
@@ -443,16 +460,14 @@ var a = [
 ---
 
 (infrastructure
-      (variable_declaration
-        (identifier)
-        (array
-          (boolean)
-          (array
-            (string
-              (string_content))
-            (boolean)))))
-
-
+  (variable_declaration
+    (identifier)
+    (array
+      (boolean)
+      (array
+        (string
+          (string_content))
+        (boolean)))))
 
 ==============================================
 Nested resource accessor
@@ -485,71 +500,71 @@ output displayName string = myParent::myChild.properties.displayName
 ---
 
 (infrastructure
-      (resource_declaration
+  (resource_declaration
+    (identifier)
+    (string
+      (string_content))
+    (object
+      (object_property
         (identifier)
         (string
-          (string_content))
-        (object
-          (object_property
-            (identifier)
-            (string
-              (string_content)))
-          (object_property
-            (identifier)
-            (string
-              (string_content)))
-          (comment)
-          (object_property
-            (resource_declaration
-              (identifier)
-              (string
-                (string_content))
-              (object
-                (object_property
-                  (identifier)
-                  (string
-                    (string_content)))
-                (object_property
-                  (identifier)
-                  (object
-                    (object_property
-                      (identifier)
-                      (string
-                        (string_content))))))))
-          (comment)
-          (object_property
-            (resource_declaration
-              (identifier)
-              (string
-                (string_content))
-              (object
-                (object_property
-                  (identifier)
-                  (string
-                    (string_content)))
-                (object_property
-                  (identifier)
-                  (object
-                    (object_property
-                      (identifier)
-                      (string
-                        (string_content)
-                        (interpolation
-                          (member_expression
-                            (member_expression
-                              (identifier)
-                              (property_identifier))
-                            (property_identifier))))))))))))
-      (comment)
-      (output_declaration
+          (string_content)))
+      (object_property
         (identifier)
-        (type
-          (builtin_type
-            (primitive_type)))
-        (member_expression
-          (member_expression
-            (resource_expression
+        (string
+          (string_content)))
+      (comment)
+      (object_property
+        (resource_declaration
+          (identifier)
+          (string
+            (string_content))
+          (object
+            (object_property
               (identifier)
-              (identifier))
-            (property_identifier))
-          (property_identifier))))
+              (string
+                (string_content)))
+            (object_property
+              (identifier)
+              (object
+                (object_property
+                  (identifier)
+                  (string
+                    (string_content))))))))
+      (comment)
+      (object_property
+        (resource_declaration
+          (identifier)
+          (string
+            (string_content))
+          (object
+            (object_property
+              (identifier)
+              (string
+                (string_content)))
+            (object_property
+              (identifier)
+              (object
+                (object_property
+                  (identifier)
+                  (string
+                    (string_content)
+                    (interpolation
+                      (member_expression
+                        (member_expression
+                          (identifier)
+                          (property_identifier))
+                        (property_identifier))))))))))))
+  (comment)
+  (output_declaration
+    (identifier)
+    (type
+      (builtin_type
+        (primitive_type)))
+    (member_expression
+      (member_expression
+        (resource_expression
+          (identifier)
+          (identifier))
+        (property_identifier))
+      (property_identifier))))

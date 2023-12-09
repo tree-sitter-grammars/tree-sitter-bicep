@@ -76,6 +76,7 @@ module.exports = grammar({
       $.declaration,
       $.import_statement,
       $.import_with_statement,
+      $.import_functionality,
       $.target_scope_assignment,
     ),
 
@@ -98,15 +99,26 @@ module.exports = grammar({
     ),
 
     import_statement: $ => seq(
-      'import',
+      choice('import', 'provider'),
       $.import_string,
+      optional(seq('as', $.identifier)),
     ),
 
     import_with_statement: $ => seq(
-      'import',
+      choice('import', 'provider'),
       $.import_string,
       'with',
       $.expression,
+    ),
+
+    import_functionality: $ => seq(
+      'import',
+      choice(
+        seq('{', commaSep1(choice(seq($.identifier, 'as', $.identifier), $.identifier)), '}'),
+        seq('*', 'as', $.identifier),
+      ),
+      'from',
+      $.string,
     ),
 
     target_scope_assignment: $ => seq('targetScope', '=', $.string),
@@ -391,6 +403,7 @@ module.exports = grammar({
       choice(
         'module',
         'import',
+        'provider',
         'metadata',
         'output',
         'param',
