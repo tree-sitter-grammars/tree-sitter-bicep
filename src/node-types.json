@@ -134,6 +134,10 @@
         "named": true
       },
       {
+        "type": "import_functionality",
+        "named": true
+      },
+      {
         "type": "import_statement",
         "named": true
       },
@@ -522,13 +526,36 @@
     }
   },
   {
+    "type": "import_functionality",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "import_statement",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
         {
           "type": "import_string",
           "named": true
@@ -1362,6 +1389,10 @@
     "named": false
   },
   {
+    "type": "as",
+    "named": false
+  },
+  {
     "type": "bool",
     "named": false
   },
@@ -1387,6 +1418,10 @@
   },
   {
     "type": "for",
+    "named": false
+  },
+  {
+    "type": "from",
     "named": false
   },
   {
@@ -1464,6 +1499,10 @@
   {
     "type": "property_identifier",
     "named": true
+  },
+  {
+    "type": "provider",
+    "named": false
   },
   {
     "type": "resource",
