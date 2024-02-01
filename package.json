@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-bicep",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bicep grammar for tree-sitter",
   "main": "bindings/node",
   "keywords": [
