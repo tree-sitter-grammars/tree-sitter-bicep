@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/amaanq/tree-sitter-bicep/compare/v1.0.0...v1.0.1) (2024-02-01)
+
+
+### Bug Fixes
+
+* update grammar to support user defined imports ([3627c66](https://github.com/amaanq/tree-sitter-bicep/commit/3627c666074eb496bf88d72a39321d6e6509f5e5))
+
 ## 1.0.0 (2023-05-13)
 
 
