@@ -109,6 +109,7 @@ module.exports = grammar({
       $.import_string,
       'with',
       $.expression,
+      optional(seq('as', $.identifier)),
     ),
 
     import_functionality: $ => seq(

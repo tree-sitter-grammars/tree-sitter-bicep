@@ -595,6 +595,10 @@
           "named": true
         },
         {
+          "type": "identifier",
+          "named": true
+        },
+        {
           "type": "import_string",
           "named": true
         }
