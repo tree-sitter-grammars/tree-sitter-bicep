@@ -25,7 +25,7 @@ function clone_repo {
 	popd >/dev/null
 }
 
-clone_repo Azure bicep 8058736bb7b723b89fc48b224d0f1b2a25acc044
+clone_repo Azure bicep bb49a7aaa82f87ffee65e8053a44347d77f76ee1
 
 known_failures="$(cat script/known_failures.txt)"
 
