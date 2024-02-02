@@ -89,6 +89,7 @@ module.exports = grammar({
       $.resource_declaration,
       $.type_declaration,
       $.variable_declaration,
+      $.user_defined_function,
     ),
 
     module_declaration: $ => seq(
@@ -172,6 +173,19 @@ module.exports = grammar({
       $.expression,
       optional('!'),
     ),
+
+    user_defined_function: $ => seq(
+      'func',
+      field('name', $.identifier),
+      $.parameters,
+      field('returns', $.type),
+      '=>',
+      $.expression,
+    ),
+
+    parameters: $ => seq('(', commaSep($.parameter), ')'),
+
+    parameter: $ => seq($.identifier, $.type),
 
     expression: $ => choice(
       $.primary_expression,
