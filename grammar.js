@@ -91,6 +91,7 @@ module.exports = grammar({
       $.variable_declaration,
       $.user_defined_function,
       $.test_block,
+      $.assert_statement,
     ),
 
     module_declaration: $ => seq(
@@ -190,6 +191,13 @@ module.exports = grammar({
       $.string,
       '=',
       $.object,
+    ),
+
+    assert_statement: $ => seq(
+      'assert',
+      field('name', $.identifier),
+      '=',
+      $.expression,
     ),
 
     parameters: $ => seq('(', commaSep($.parameter), ')'),
