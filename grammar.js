@@ -44,6 +44,15 @@ const primitive_types = [
 module.exports = grammar({
   name: 'bicep',
 
+  conflicts: $ => [
+    [$.arguments, $.parenthesized_expression],
+    [$.primary_expression, $.parameterized_type],
+    [$.primary_expression, $._type_not_union],
+    [$.primary_expression, $._type_not_union, $._lhs_expression],
+    [$.binary_expression, $.union_type],
+    [$.type, $.union_type],
+  ],
+
   externals: $ => [
     $._external_asterisk,
     $._multiline_string_content,
@@ -59,16 +68,16 @@ module.exports = grammar({
     $.keyword_identifier,
   ],
 
+  precedences: $ => [
+    [$.union_type, $.primary_expression],
+    [$.union_type, $._literal],
+  ],
+
   supertypes: $ => [
     $.statement,
     $.declaration,
     $.expression,
     $.primary_expression,
-  ],
-
-  conflicts: $ => [
-    [$.arguments, $.parenthesized_expression],
-    [$._binary_type_expression, $.primary_expression],
   ],
 
   word: $ => $.identifier,
@@ -109,13 +118,13 @@ module.exports = grammar({
 
     import_statement: $ => seq(
       choice('import', 'provider'),
-      $.import_string,
+      $.string,
       optional(seq('as', $.identifier)),
     ),
 
     import_with_statement: $ => seq(
       choice('import', 'provider'),
-      $.import_string,
+      $.string,
       'with',
       $.expression,
       optional(seq('as', $.identifier)),
@@ -170,7 +179,13 @@ module.exports = grammar({
       'type',
       $.identifier,
       '=',
-      choice($.expression, $.builtin_type, $.array_type),
+      choice(
+        $.expression,
+        $.array_type,
+        $.parameterized_type,
+        $.union_type,
+        $.nullable_type,
+      ),
     ),
 
     variable_declaration: $ => seq(
@@ -218,7 +233,7 @@ module.exports = grammar({
       $.lambda_expression,
     ),
 
-    primary_expression: $ => choice(
+    primary_expression: $ => prec(2, choice(
       $.subscript_expression,
       $.member_expression,
       $.resource_expression,
@@ -231,7 +246,7 @@ module.exports = grammar({
       $.array,
       $.parenthesized_expression,
       $.call_expression,
-    ),
+    )),
 
     call_expression: $ => prec.right(PREC.CALL, seq(
       field('function', $.expression),
@@ -257,10 +272,10 @@ module.exports = grammar({
     ),
     object: $ => seq(
       '{',
-      seq(
+      optionalCommaSep(seq(
         optional($.decorators),
-        optionalCommaSep($.object_property),
-      ),
+        $.object_property,
+      )),
       '}',
     ),
     object_property: $ => choice(
@@ -273,7 +288,14 @@ module.exports = grammar({
           alias($._external_asterisk, '*'),
         ),
         ':',
-        choice($.expression, $.builtin_type, $.array_type, $.nullable_type),
+        choice(
+          $.expression,
+          $.primitive_type,
+          $.array_type,
+          $.nullable_type,
+          $.parameterized_type,
+          $.union_type,
+        ),
       ),
       $.resource_declaration,
     ),
@@ -315,16 +337,18 @@ module.exports = grammar({
     ),
 
     member_expression: $ => prec(PREC.SUBSCRIPT, seq(
-      field('object', choice($.expression, $.primary_expression)),
+      field('object', choice($.expression, $.primary_expression, $.parameterized_type)),
       optional('!'),
-      '.',
+      choice('.', '.?'),
       field('property', alias($.identifier, $.property_identifier)),
     )),
 
     subscript_expression: $ => prec.right(PREC.SUBSCRIPT, seq(
       field('object', choice($.expression, $.primary_expression)),
       '[',
-      field('index', $.expression), ']',
+      optional('?'),
+      field('index', $.expression),
+      ']',
     )),
 
     resource_expression: $ => prec.right(PREC.SUBSCRIPT, seq(
@@ -387,15 +411,6 @@ module.exports = grammar({
 
     string: $ => choice($._string_literal, $._multiline_string_literal),
 
-    // import string: xx@1.0.0, regex for not @, then @, then regex for 1.0.0
-    import_string: $ => seq(
-      '\'',
-      alias(/[^@]+/, $.import_name),
-      '@',
-      alias(/[0-9]+.[0-9]+.[0-9]+/, $.import_version),
-      '\'',
-    ),
-
     _string_literal: $ => seq(
       '\'',
       repeat(choice(
@@ -410,6 +425,7 @@ module.exports = grammar({
       '\'',
     ),
     string_content: _ => token(prec(-1, /[^'$\\]+/)),
+
     _multiline_string_literal: $ => seq(
       '\'\'\'',
       alias($.multiline_string_content, $.string_content),
@@ -455,63 +471,66 @@ module.exports = grammar({
     compatible_identifier: $ => prec(1, seq(choice($.identifier, $.keyword_identifier), '?')),
 
     type: $ => choice(
-      $.identifier,
-      $.array_type,
-      $.object,
-      $.builtin_type,
-      $._binary_type_expression,
-      $.member_expression,
+      $.union_type,
+      $._type_not_union,
     ),
 
-    _binary_type_expression: $ => {
-      const table = [
-        ['+', PREC.ADD],
-        ['-', PREC.ADD],
-        ['*', PREC.MULTIPLY],
-        ['/', PREC.MULTIPLY],
-        ['%', PREC.MULTIPLY],
-        ['||', PREC.LOGICAL_OR],
-        ['&&', PREC.LOGICAL_AND],
-        ['|', PREC.INCLUSIVE_OR],
-        ['==', PREC.EQUAL],
-        ['!=', PREC.EQUAL],
-        ['=~', PREC.EQUAL],
-        ['!~', PREC.EQUAL],
-        ['>', PREC.RELATIONAL],
-        ['>=', PREC.RELATIONAL],
-        ['<=', PREC.RELATIONAL],
-        ['<', PREC.RELATIONAL],
-        ['??', PREC.TERNARY],
-      ];
+    _type_not_union: $ => prec(2, choice(
+      $.identifier,
+      $.string,
+      $.number,
+      $.boolean,
+      $.null,
+      $.array_type,
+      $.object,
+      $.primitive_type,
+      $.member_expression,
+      $.parameterized_type,
+      $.nullable_type,
+      $.negated_type,
+      $.parenthesized_type,
+    )),
 
-      const types = choice(
-        $.identifier,
-        $.array_type,
-        $.object,
-        $.builtin_type,
-      );
-
-      return choice(...table.map(([operator, precedence]) => {
-        return prec.left(precedence, seq(
-          field('left', types),
-          // @ts-ignore
-          field('operator', operator),
-          field('right', types),
-        ));
-      }));
-    },
-
-    builtin_type: $ => choice($.primitive_type, $._array_builtin_type),
     primitive_type: _ => choice(...primitive_types),
-    _array_builtin_type: $ => seq($.primitive_type, repeat1(seq('[', ']'))),
-    array_type: $ => seq($.expression, repeat1(seq('[', ']'))),
+    array_type: $ => seq($.type, '[', ']'),
     nullable_type: $ => seq(
       choice(
         $.expression,
-        $.builtin_type,
+        $.primitive_type,
         $.array_type,
+        $.parenthesized_type,
       ),
-      '!',
+      choice('!', prec(-1, '?')),
+    ),
+
+    negated_type: $ => prec.right(seq('!', $.type)),
+
+    union_type: $ => prec.right(seq(
+      optional(choice(
+        prec(2, $._type_not_union),
+        $.expression,
+      )),
+      repeat1(prec.right(1, seq(
+        '|',
+        choice(
+          prec(2, $._type_not_union),
+          $.expression,
+        ),
+      ))),
+    )),
+
+    parenthesized_type: $ => seq('(', $.type, ')'),
+
+    parameterized_type: $ => prec(2, seq(
+      optional(seq($.identifier, '.')),
+      'resource',
+      $.type_arguments,
+    )),
+
+    type_arguments: $ => seq(
+      '<',
+      commaSep1($.string),
+      '>',
     ),
 
     // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
