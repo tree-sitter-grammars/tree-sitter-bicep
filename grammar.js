@@ -44,6 +44,11 @@ const primitive_types = [
 module.exports = grammar({
   name: 'bicep',
 
+  externals: $ => [
+    $._external_asterisk,
+    $._multiline_string_content,
+  ],
+
   extras: $ => [
     $.comment,
     $.diagnostic_comment,
@@ -260,7 +265,13 @@ module.exports = grammar({
     ),
     object_property: $ => choice(
       seq(
-        choice($.identifier, $.keyword_identifier, $.compatible_identifier, $.string),
+        choice(
+          $.identifier,
+          $.keyword_identifier,
+          $.compatible_identifier,
+          $.string,
+          alias($._external_asterisk, '*'),
+        ),
         ':',
         choice($.expression, $.builtin_type, $.array_type, $.nullable_type),
       ),
@@ -398,23 +409,14 @@ module.exports = grammar({
       )),
       '\'',
     ),
+    string_content: _ => token(prec(-1, /[^'$\\]+/)),
     _multiline_string_literal: $ => seq(
       '\'\'\'',
-      repeat(choice(
-        alias($._multiline_string_content, $.multiline_string_content),
-        $._escape_sequence,
-        $.interpolation,
-      )),
+      alias($.multiline_string_content, $.string_content),
       '\'\'\'',
     ),
 
-    string_content: _ => token(prec(-1, /[^'$\\]+/)),
-    _multiline_string_content: _ => token(prec.right(-1,
-      choice(
-        /[^']+/,
-        seq(/'[^']*/, repeat(/[^']+/)),
-      ),
-    )),
+    multiline_string_content: $ => repeat1($._multiline_string_content),
 
     _escape_sequence: $ =>
       choice(
