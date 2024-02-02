@@ -51,9 +51,8 @@ provider 'sys@1.0.0'
 
 (infrastructure
   (import_statement
-    (import_string
-      (import_name)
-      (import_version))))
+    (string
+      (string_content))))
 
 ==============================================
 Simple variable assignment
@@ -123,7 +122,7 @@ var foo = '''aaa'''
   (variable_declaration
     (identifier)
     (string
-      (multiline_string_content))))
+      (string_content))))
 
 ==============================================
 Object assignment
@@ -351,8 +350,7 @@ var foo = '''hello'world'''
   (variable_declaration
     (identifier)
     (string
-      (multiline_string_content)
-      (multiline_string_content))))
+      (string_content))))
 
 ==============================================
 String containing dollar
@@ -443,7 +441,7 @@ var a = '''/*'''
   (variable_declaration
     (identifier)
     (string
-      (multiline_string_content))))
+      (string_content))))
 
 ==============================================
 Mixed array
@@ -559,8 +557,7 @@ output displayName string = myParent::myChild.properties.displayName
   (output_declaration
     (identifier)
     (type
-      (builtin_type
-        (primitive_type)))
+      (primitive_type))
     (member_expression
       (member_expression
         (resource_expression
