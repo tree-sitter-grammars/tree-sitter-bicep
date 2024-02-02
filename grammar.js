@@ -90,6 +90,7 @@ module.exports = grammar({
       $.type_declaration,
       $.variable_declaration,
       $.user_defined_function,
+      $.test_block,
     ),
 
     module_declaration: $ => seq(
@@ -181,6 +182,14 @@ module.exports = grammar({
       field('returns', $.type),
       '=>',
       $.expression,
+    ),
+
+    test_block: $ => seq(
+      'test',
+      $.identifier,
+      $.string,
+      '=',
+      $.object,
     ),
 
     parameters: $ => seq('(', commaSep($.parameter), ')'),
