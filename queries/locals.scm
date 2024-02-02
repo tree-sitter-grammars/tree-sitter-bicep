@@ -36,12 +36,19 @@
   (compatible_identifier) @local.definition.field
   (_))
 
+(user_defined_function
+  name: (identifier) @local.definition.function)
+
 (module_declaration
   (identifier) @local.definition.namespace)
 
 (parameter_declaration
   (identifier) @local.definition.parameter
   (_))
+
+(parameter
+  .
+  (identifier) @local.definition.parameter)
 
 (type_declaration
   (identifier) @local.definition.type

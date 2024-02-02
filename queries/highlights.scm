@@ -1,5 +1,4 @@
 ; Includes
-
 [
   "import"
   "provider"
@@ -22,6 +21,9 @@
 ; Functions
 (call_expression
   function: (identifier) @function.call)
+
+(user_defined_function
+  name: (identifier) @function)
 
 ; Properties
 (object_property
@@ -83,6 +85,10 @@
   (arguments
     (member_expression
       object: (identifier) @variable.parameter)))
+
+(parameter
+  .
+  (identifier) @variable.parameter)
 
 ; Variables
 (variable_declaration
@@ -164,10 +170,15 @@
   ".?"
 ] @operator
 
+(subscript_expression
+  "?" @operator)
+
+(nullable_type
+  "?" @operator)
+
 "in" @keyword.operator
 
 ; Literals
-
 (string) @string
 
 (escape_sequence) @string.escape
@@ -179,7 +190,6 @@
 (null) @constant.builtin
 
 ; Misc
-
 (compatible_identifier
   "?" @punctuation.special)
 
@@ -202,6 +212,7 @@
 
 [
   "."
+  ":"
   "::"
   "=>"
 ] @punctuation.delimiter
