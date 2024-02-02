@@ -77,6 +77,7 @@ module.exports = grammar({
       $.import_statement,
       $.import_with_statement,
       $.import_functionality,
+      $.using_statement,
       $.target_scope_assignment,
     ),
 
@@ -121,6 +122,8 @@ module.exports = grammar({
       'from',
       $.string,
     ),
+
+    using_statement: $ => seq('using', $.string),
 
     target_scope_assignment: $ => seq('targetScope', '=', $.string),
 
