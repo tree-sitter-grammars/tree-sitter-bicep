@@ -565,3 +565,43 @@ output displayName string = myParent::myChild.properties.displayName
           (identifier))
         (property_identifier))
       (property_identifier))))
+
+==============================================
+Bice parameters file
+==============================================
+
+using './main.bicep'
+param location = readEnvironmentVariable('LOCATION', 'eastus')
+param production = bool(readEnvironmentVariable('PRODUCTION', 'false'))
+
+---
+
+(infrastructure
+  (using_statement
+    (string
+      (string_content)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (MISSING identifier))
+    (call_expression
+      (identifier)
+      (arguments
+        (string
+          (string_content))
+        (string
+          (string_content)))))
+  (parameter_declaration
+    (identifier)
+    (type
+      (MISSING identifier))
+    (call_expression
+      (identifier)
+      (arguments
+        (call_expression
+          (identifier)
+          (arguments
+            (string
+              (string_content))
+            (string
+              (string_content))))))))
