@@ -8,22 +8,28 @@ way.)
 
 ```toml
 [dependencies]
-tree-sitter = "~0.20.3"
-tree-sitter-bicep = "1.0.1"
+tree-sitter = ">=0.21"
+tree-sitter-bicep = "1.1.0"
 ```
 
 Typically, you will use the [language][language func] function to add this
 grammar to a tree-sitter [Parser][], and then use the parser to parse some code:
 
 ```rust
-let code = r#"
-    fn double(x: i32) -> i32 {
-        x * 2
-    }
-"#;
-let mut parser = Parser::new();
-parser.set_language(tree_sitter_bicep::language()).expect("Error loading Bicep grammar");
-let parsed = parser.parse(code, None);
+let code = "
+resource mystore 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: 'mystorageaccount'
+  location: 'westeurope'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+}
+";
+let mut parser = tree_sitter::Parser::new();
+parser.set_language(&tree_sitter_bicep::language()).expect("Error loading Bicep grammar");
+let tree = parser.parse(code, None).unwrap();
+assert!(!tree.root_node().has_error());
 ```
 
 If you have any questions, please reach out to us in the [tree-sitter

@@ -4,10 +4,20 @@
 //! tree-sitter [Parser][], and then use the parser to parse some code:
 //!
 //! ```
-//! let code = "";
+//! let code = "
+//! resource mystore 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+//!   name: 'mystorageaccount'
+//!   location: 'westeurope'
+//!   sku: {
+//!     name: 'Standard_LRS'
+//!   }
+//!   kind: 'StorageV2'
+//! }
+//! ";
 //! let mut parser = tree_sitter::Parser::new();
-//! parser.set_language(tree_sitter_bicep::language()).expect("Error loading Bicep grammar");
+//! parser.set_language(&tree_sitter_bicep::language()).expect("Error loading Bicep grammar");
 //! let tree = parser.parse(code, None).unwrap();
+//! assert!(!tree.root_node().has_error());
 //! ```
 //!
 //! [Language]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Language.html
@@ -57,7 +67,7 @@ mod tests {
     fn test_can_load_grammar() {
         let mut parser = tree_sitter::Parser::new();
         parser
-            .set_language(super::language())
+            .set_language(&super::language())
             .expect("Error loading Bicep grammar");
     }
 }
