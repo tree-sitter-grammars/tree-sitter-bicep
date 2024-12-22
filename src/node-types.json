@@ -616,6 +616,7 @@
   {
     "type": "infrastructure",
     "named": true,
+    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
