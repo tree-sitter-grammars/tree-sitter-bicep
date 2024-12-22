@@ -4,7 +4,7 @@ endif
 
 LANGUAGE_NAME := tree-sitter-bicep
 HOMEPAGE_URL := https://github.com/tree-sitter-grammars/tree-sitter-bicep
-VERSION := 1.0.1
+VERSION := 1.1.0
 
 # repository
 SRC_DIR := src
