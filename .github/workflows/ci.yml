@@ -2,33 +2,118 @@ name: CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+    paths:
+      - grammar.js
+      - src/**
+      - test/**
+      - bindings/**
+      - binding.gyp
   pull_request:
-    branches:
-      - "**"
+    paths:
+      - grammar.js
+      - src/**
+      - test/**
+      - bindings/**
+      - binding.gyp
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    name: Test parser
+    runs-on: ${{matrix.os}}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-14]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Run tests
+        uses: tree-sitter/parser-test-action@v2
         with:
-          node-version: 18
-      - run: npm install
-      - run: npm test
-
-  test_windows:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+          test-rust: true
+          test-node: true
+          test-python: true
+          test-go: true
+          test-swift: true
+      - name: Set up examples
+        run: |-
+          git clone https://github.com/Azure/bicep examples/bicep --single-branch --depth=1 --filter=blob:none
+      - name: Parse examples
+        uses: tree-sitter/parse-action@v4
         with:
-          node-version: 18
-      - run: npm install
-      - run: npm run-script test-windows
+          files: |
+            examples/**/*.bicep
+            !examples/bicep/src/Bicep.Cli.E2eTests/src/examples/extensions.ff/main.bicep
+            !examples/bicep/src/Bicep.Cli.E2eTests/src/examples/extensions.prod/main.bicep
+            !examples/bicep/src/Bicep.Cli.E2eTests/src/examples/local-deploy/main.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.diagnostics.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.formatted.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.ir.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.sourcemap.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.symbols.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.syntax.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/ResourceDerivedTypes_LF/main.tokens.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/baselines/TypeDeclarations_LF/main.formatted.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/user_submitted/extensibility/aks/modules/kubernetes.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/user_submitted/extensibility/microsoftGraph/main.bicep
+            !examples/bicep/src/Bicep.Core.Samples/Files/user_submitted/extensibility/microsoftGraph/main.existing.bicep
+            !examples/bicep/src/Bicep.LangServer.IntegrationTests/Files/ImportKubernetesManifest/azure-vote-all-in-one-redis/manifest.bicep
+            !examples/bicep/src/Bicep.LangServer.IntegrationTests/Files/ImportKubernetesManifest/wordpress/manifest.bicep
+          invalid-files: |
+            examples/**/Invalid*
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.diagnostics.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.formatted.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.ir.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.pprint.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.sourcemap.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.symbols.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Imports_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.diagnostics.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.formatted.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.pprint.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.symbols.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidFunctions_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.diagnostics.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.formatted.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.pprint.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.symbols.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidResourceDerivedTypes_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.diagnostics.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.formatted.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.ir.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.pprint.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.sourcemap.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.symbols.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/InvalidTestFramework_CRLF/samples/broken.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Lambdas_LF/main.pprint.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Metadata_CRLF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Metadata_CRLF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/NewlineSensitivity_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/NewlineSensitivity_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Parameters_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Parameters_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Variables_LF/main.syntax.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines/Variables_LF/main.tokens.bicep
+            examples/bicep/src/Bicep.Core.Samples/Files/baselines_bicepparam/Invalid_Imports/foo.bicep
+            examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/issue5455/nested_StorageRoleDeploymentResource.bicep
+            examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/nested-outer/nested_testnested.bicep
+            examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/userdefinedfunctions/main.bicep 
+            examples/bicep/src/Bicep.MSBuild.E2eTests/examples/fail/fail.bicep
+            examples/bicep/src/vscode-bicep/src/test/e2e/examples/files/invalid-resources/main.bicep
