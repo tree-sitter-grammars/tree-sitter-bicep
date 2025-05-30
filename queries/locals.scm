@@ -25,6 +25,12 @@
 (resource_expression
   (identifier) @local.reference)
 
+(extension_statement
+  name: (identifier) @local.reference)
+
+(extension_with_statement
+  name: (identifier) @local.reference)
+
 ; Definitions
 (type) @local.definition.associated
 
@@ -40,6 +46,17 @@
   name: (identifier) @local.definition.function)
 
 (module_declaration
+  (identifier) @local.definition.namespace)
+
+(import_statement
+  "as"
+  (identifier) @local.definition.namespace)
+
+(import_with_statement
+  "as"
+  (identifier) @local.definition.namespace)
+
+(import_functionality
   (identifier) @local.definition.namespace)
 
 (parameter_declaration
@@ -65,6 +82,18 @@
 (output_declaration
   (identifier) @local.definition.var
   (_))
+
+(extension_statement
+  name: (identifier) @local.definition.namespace)
+
+(extension_statement
+  alias: (identifier) @local.definition.namespace)
+
+(extension_with_statement
+  name: (identifier) @local.definition.namespace)
+
+(extension_with_statement
+  alias: (identifier) @local.definition.namespace)
 
 (for_statement
   "for"

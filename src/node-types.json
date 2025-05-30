@@ -146,6 +146,14 @@
         "named": true
       },
       {
+        "type": "extension_statement",
+        "named": true
+      },
+      {
+        "type": "extension_with_statement",
+        "named": true
+      },
+      {
         "type": "import_functionality",
         "named": true
       },
@@ -468,6 +476,68 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "extension_statement",
+    "named": true,
+    "fields": {
+      "alias": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "extension_with_statement",
+    "named": true,
+    "fields": {
+      "alias": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "properties": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "object",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -1604,11 +1674,13 @@
   },
   {
     "type": "comment",
-    "named": true
+    "named": true,
+    "extra": true
   },
   {
     "type": "diagnostic_comment",
-    "named": true
+    "named": true,
+    "extra": true
   },
   {
     "type": "escape_sequence",
@@ -1616,6 +1688,10 @@
   },
   {
     "type": "existing",
+    "named": false
+  },
+  {
+    "type": "extension",
     "named": false
   },
   {
@@ -1697,10 +1773,6 @@
   {
     "type": "property_identifier",
     "named": true
-  },
-  {
-    "type": "provider",
-    "named": false
   },
   {
     "type": "resource",

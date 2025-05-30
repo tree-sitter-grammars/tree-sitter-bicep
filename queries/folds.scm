@@ -1,5 +1,7 @@
 [
   (module_declaration)
+  (extension_with_statement)
+  (import_with_statement)
   (metadata_declaration)
   (output_declaration)
   (parameter_declaration)

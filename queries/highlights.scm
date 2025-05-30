@@ -1,11 +1,34 @@
 ; Includes
 [
   "import"
-  "provider"
   "with"
   "as"
   "from"
 ] @keyword.import
+
+; Import statements
+(import_statement
+  (string) @string.special.path)
+
+(import_with_statement
+  (string) @string.special.path)
+
+(import_functionality
+  "from"
+  (string) @string.special.path)
+
+; Extensions
+(extension_statement
+  name: (identifier) @module)
+
+(extension_statement
+  alias: (identifier) @module)
+
+(extension_with_statement
+  name: (identifier) @module)
+
+(extension_with_statement
+  alias: (identifier) @module)
 
 ; Namespaces
 (module_declaration
@@ -134,6 +157,7 @@
   "output"
   "param"
   "resource"
+  "extension"
   "existing"
   "targetScope"
   "type"

@@ -42,10 +42,10 @@ import * as bar from './bar.bicep'
       (string_content))))
 
 ==============================================
-Simple provider import
+Simple import
 ==============================================
 
-provider 'sys@1.0.0'
+import 'sys@1.0.0'
 
 ---
 
@@ -53,6 +53,162 @@ provider 'sys@1.0.0'
   (import_statement
     (string
       (string_content))))
+
+==============================================
+Simple extension import
+==============================================
+
+extension microsoftGraph
+
+---
+
+(infrastructure
+  (extension_statement
+    name: (identifier)))
+
+==============================================
+Extension with alias
+==============================================
+
+extension microsoftGraph as graph
+
+---
+
+(infrastructure
+  (extension_statement
+    name: (identifier)
+    alias: (identifier)))
+
+==============================================
+Extension with properties
+==============================================
+
+extension kubernetes with {
+  namespace: 'default'
+  kubeConfig: kubeConfig
+}
+
+---
+
+(infrastructure
+  (extension_with_statement
+    name: (identifier)
+    properties: (object
+      (object_property
+        (identifier)
+        (string
+          (string_content)))
+      (object_property
+        (identifier)
+        (identifier)))))
+
+==============================================
+Extension with properties and alias
+==============================================
+
+extension kubernetes with {
+  namespace: 'default'
+  kubeConfig: kubeConfig
+} as k8s
+
+---
+
+(infrastructure
+  (extension_with_statement
+    name: (identifier)
+    properties: (object
+      (object_property
+        (identifier)
+        (string
+          (string_content)))
+      (object_property
+        (identifier)
+        (identifier)))
+    alias: (identifier)))
+
+==============================================
+Extension with complex properties
+==============================================
+
+extension azureStorage with {
+  storageAccount: storageAccountName
+  containerName: 'mycontainer'
+  enableVersioning: true
+  retentionDays: 30
+}
+
+---
+
+(infrastructure
+  (extension_with_statement
+    name: (identifier)
+    properties: (object
+      (object_property
+        (identifier)
+        (identifier))
+      (object_property
+        (identifier)
+        (string
+          (string_content)))
+      (object_property
+        (identifier)
+        (boolean))
+      (object_property
+        (identifier)
+        (number)))))
+
+==============================================
+Extension with nested properties
+==============================================
+
+extension dataProcessor with {
+  settings: {
+    batchSize: 100
+    timeout: 30
+    retry: {
+      maxAttempts: 3
+      backoffMs: 1000
+    }
+  }
+  endpoints: ['api1', 'api2']
+  enabled: true
+} as processor
+
+---
+
+(infrastructure
+  (extension_with_statement
+    name: (identifier)
+    properties: (object
+      (object_property
+        (identifier)
+        (object
+          (object_property
+            (identifier)
+            (number))
+          (object_property
+            (identifier)
+            (number))
+          (object_property
+            (identifier)
+            (object
+              (object_property
+                (identifier)
+                (number))
+              (object_property
+                (identifier)
+                (number))))))
+      (object_property
+        (identifier)
+        (array
+          (string
+            (string_content))
+          (string
+            (string_content))))
+      (object_property
+        (identifier)
+        (boolean)))
+    alias: (identifier)))
 
 ==============================================
 Simple variable assignment

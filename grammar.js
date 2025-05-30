@@ -88,6 +88,8 @@ module.exports = grammar({
     statement: $ => choice(
       $.decorators,
       $.declaration,
+      $.extension_statement,
+      $.extension_with_statement,
       $.import_statement,
       $.import_with_statement,
       $.import_functionality,
@@ -116,14 +118,28 @@ module.exports = grammar({
       choice($.if_statement, $.object, $.for_statement),
     ),
 
+    extension_statement: $ => seq(
+      'extension',
+      field('name', $.identifier),
+      optional(seq('as', field('alias', $.identifier))),
+    ),
+
+    extension_with_statement: $ => seq(
+      'extension',
+      field('name', $.identifier),
+      'with',
+      field('properties', $.object),
+      optional(seq('as', field('alias', $.identifier))),
+    ),
+
     import_statement: $ => seq(
-      choice('import', 'provider'),
+      'import',
       $.string,
       optional(seq('as', $.identifier)),
     ),
 
     import_with_statement: $ => seq(
-      choice('import', 'provider'),
+      'import',
       $.string,
       'with',
       $.expression,
@@ -456,7 +472,7 @@ module.exports = grammar({
       choice(
         'module',
         'import',
-        'provider',
+        'extension',
         'metadata',
         'output',
         'param',
