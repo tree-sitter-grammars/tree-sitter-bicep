@@ -45,12 +45,29 @@ import * as bar from './bar.bicep'
 Simple provider import
 ==============================================
 
+import 'az@1.0.0'
 provider 'sys@1.0.0'
 
 ---
 
 (infrastructure
   (import_statement
+    (string
+      (string_content)))
+  (import_statement
+    (string
+      (string_content))))
+
+==============================================
+Simple using
+==============================================
+
+using 'ts/myStorage:storageSpec:1.0'
+
+---
+
+(infrastructure
+  (using_statement
     (string
       (string_content))))
 
@@ -565,3 +582,88 @@ output displayName string = myParent::myChild.properties.displayName
           (identifier))
         (property_identifier))
       (property_identifier))))
+
+==============================================
+Parameters
+==============================================
+
+param demoString string
+param demoInt int
+param demoBool bool
+param demoObject object
+param demoArray array
+
+---
+
+(infrastructure
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type))))
+
+==============================================
+Parameters with default
+==============================================
+
+param var1 string = 'test-data'
+param location string = resourceGroup().location
+param siteName string = 'site${uniqueString(resourceGroup().id)}'
+param hostingPlanName string = '${siteName}-plan'
+
+---
+
+(infrastructure
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type))
+    (string
+      (string_content)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type))
+    (member_expression
+      (call_expression
+        (identifier)
+        (arguments))
+      (property_identifier)))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type))
+    (string
+      (string_content)
+      (interpolation
+        (call_expression
+          (identifier)
+          (arguments
+            (member_expression
+              (call_expression
+                (identifier)
+                (arguments))
+              (property_identifier)))))))
+  (parameter_declaration
+    (identifier)
+    (type
+      (primitive_type))
+    (string
+      (interpolation
+        (identifier))
+      (string_content))))

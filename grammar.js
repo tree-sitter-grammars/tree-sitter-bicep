@@ -110,16 +110,23 @@ module.exports = grammar({
 
     module_declaration: $ => seq(
       'module',
-      $.identifier,
-      $.string,
+      field('name', $.identifier),
+      field('path', $.string),
       '=',
-      choice($.if_statement, $.object, $.for_statement),
+      field('body',
+        choice($.if_statement, $.object, $.for_statement),
+      ),
     ),
 
     import_statement: $ => seq(
       choice('import', 'provider'),
       $.string,
-      optional(seq('as', $.identifier)),
+      optional(
+        seq(
+          'as',
+          field('alias', $.identifier)
+        )
+      ),
     ),
 
     import_with_statement: $ => seq(
@@ -133,43 +140,64 @@ module.exports = grammar({
     import_functionality: $ => seq(
       'import',
       choice(
-        seq('{', commaSep1(choice(seq($.identifier, 'as', $.identifier), $.identifier)), '}'),
-        seq('*', 'as', $.identifier),
+        seq('{', commaSep1(
+          choice(
+            seq(
+              field('identifier', $.identifier),
+              'as',
+              field('alias', $.identifier)
+            ),
+            field('identifier', $.identifier)
+          )),
+          '}'
+        ),
+        seq(
+          field('identifier', '*'),
+          'as',
+          field('alias', $.identifier)
+        ),
       ),
       'from',
-      $.string,
+      field('path', $.string),
     ),
 
-    using_statement: $ => seq('using', $.string),
+    using_statement: $ => seq(
+      'using',
+      field('path', $.string)
+    ),
 
-    target_scope_assignment: $ => seq('targetScope', '=', $.string),
+    target_scope_assignment: $ => seq(
+      'targetScope',
+      '=',
+      field('scope', $.string),
+    ),
 
     metadata_declaration: $ => seq(
       'metadata',
-      $.identifier,
+      field('name', $.identifier),
       '=',
-      $.expression,
+      field('value', $.expression),
     ),
 
     output_declaration: $ => seq(
       'output',
-      $.identifier,
-      $.type,
+      field('name', $.identifier),
+      field('type', $.type),
       '=',
-      $.expression,
+      field('value', $.expression),
     ),
 
     parameter_declaration: $ => seq(
       'param',
-      $.identifier,
-      $.type,
-      optional(seq('=', $.expression)),
+      field('name', $.identifier),
+      field('type', $.type),
+      field('default', optional(seq('=', $.expression))),
     ),
 
     resource_declaration: $ => seq(
       'resource',
-      $.identifier,
-      $.string,
+      field('name', $.identifier),
+      field('type', $.string),
       optional('existing'),
       '=',
       choice($.if_statement, $.object, $.for_statement),
@@ -177,22 +205,24 @@ module.exports = grammar({
 
     type_declaration: $ => seq(
       'type',
-      $.identifier,
+      field('name', $.identifier),
       '=',
-      choice(
-        $.expression,
-        $.array_type,
-        $.parameterized_type,
-        $.union_type,
-        $.nullable_type,
+      field('value', 
+        choice(
+          $.expression,
+          $.array_type,
+          $.parameterized_type,
+          $.union_type,
+          $.nullable_type,
+        )
       ),
     ),
 
     variable_declaration: $ => seq(
       'var',
-      $.identifier,
+      field('name', $.identifier),
       '=',
-      $.expression,
+      field('value', $.expression),
       optional('!'),
     ),
 
@@ -207,7 +237,7 @@ module.exports = grammar({
 
     test_block: $ => seq(
       'test',
-      $.identifier,
+      field('name', $.identifier),
       $.string,
       '=',
       $.object,
@@ -222,7 +252,10 @@ module.exports = grammar({
 
     parameters: $ => seq('(', commaSep($.parameter), ')'),
 
-    parameter: $ => seq($.identifier, $.type),
+    parameter: $ => seq(
+      field('name', $.identifier),
+      field('type', $.type),
+    ),
 
     expression: $ => choice(
       $.primary_expression,
@@ -300,7 +333,11 @@ module.exports = grammar({
       $.resource_declaration,
     ),
 
-    if_statement: $ => seq('if', $.parenthesized_expression, $.object),
+    if_statement: $ => seq(
+      'if',
+      field('condition', $.parenthesized_expression),
+      field('body', $.object),
+    ),
 
     _lhs_expression: $ => prec(-1, choice(
       $.member_expression,
