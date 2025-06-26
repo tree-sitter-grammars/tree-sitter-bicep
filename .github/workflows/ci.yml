@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-14]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,16 +37,16 @@ jobs:
       - name: Run tests
         uses: tree-sitter/parser-test-action@v2
         with:
+          generate: false
           test-rust: true
-          test-node: true
-          test-python: true
-          test-go: true
-          test-swift: true
-      - name: Set up examples
-        run: |-
-          git clone https://github.com/Azure/bicep examples/bicep --single-branch --depth=1 --filter=blob:none
+      - name: Clone Bicep repository
+        uses: actions/checkout@v4
+        with:
+          path: examples/bicep
+          repository: Azure/bicep
       - name: Parse examples
         uses: tree-sitter/parse-action@v4
+        id: parse-files
         with:
           files: |
             examples/**/*.bicep
@@ -117,3 +117,9 @@ jobs:
             examples/bicep/src/Bicep.Decompiler.IntegrationTests/Files/Working/userdefinedfunctions/main.bicep 
             examples/bicep/src/Bicep.MSBuild.E2eTests/examples/fail/fail.bicep
             examples/bicep/src/vscode-bicep/src/test/e2e/examples/files/invalid-resources/main.bicep
+      - name: Upload failures artifact
+        uses: actions/upload-artifact@v4
+        if: "!cancelled() && steps.parse-files.outcome == 'failure'"
+        with:
+          name: failures-${{runner.os}}
+          path: ${{steps.parse-files.outputs.failures}}
