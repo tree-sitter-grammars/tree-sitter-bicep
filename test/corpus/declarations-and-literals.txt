@@ -1,0 +1,322 @@
+==============================================
+Simple import statement
+==============================================
+
+import { foo } from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple alias import statement
+==============================================
+
+import { foo as bar } from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple wildcard import statement
+==============================================
+
+import * as bar from './bar.bicep'
+
+---
+
+(infrastructure
+  (import_functionality
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Simple provider import
+==============================================
+
+provider 'sys@1.0.0'
+
+---
+
+(infrastructure
+  (import_statement
+    (string
+      (string_content))))
+
+==============================================
+Simple variable assignment
+==============================================
+
+var foo = null
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (null)))
+
+==============================================
+Simple string assignment
+==============================================
+
+var foo = 'aaa'
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Empty string assignment
+==============================================
+
+var foo = ''
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (string)))
+
+==============================================
+String escape sequence
+==============================================
+
+var foo = 'a\'a'
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)
+      (escape_sequence)
+      (string_content))))
+
+==============================================
+Multiline string assignment
+==============================================
+
+var foo = '''aaa'''
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content))))
+
+==============================================
+Object assignment
+==============================================
+
+var foo = {
+  name: 'hello'
+  location: true
+}
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (object
+      (object_property
+        (identifier)
+        (string
+          (string_content)))
+      (object_property
+        (identifier)
+        (boolean)))))
+
+==============================================
+For loop
+==============================================
+
+resource sa 'Microsoft.Storage/storageAccounts@2019-06-01' = [for storageName in storageAccounts: {
+  name: storageName
+  location: location
+  sku: {
+    name: storageSKU
+  }
+  kind: 'StorageV2'
+  properties: {
+    supportsHttpsTrafficOnly: true
+  }
+}]
+
+---
+
+(infrastructure
+  (resource_declaration
+    (identifier)
+    (string
+      (string_content))
+    (for_statement
+      (identifier)
+      (identifier)
+      (object
+        (object_property
+          (identifier)
+          (identifier))
+        (object_property
+          (identifier)
+          (identifier))
+        (object_property
+          (identifier)
+          (object
+            (object_property
+              (identifier)
+              (identifier))))
+        (object_property
+          (identifier)
+          (string
+            (string_content)))
+        (object_property
+          (identifier)
+          (object
+            (object_property
+              (identifier)
+              (boolean))))))))
+
+==============================================
+Numbers
+==============================================
+
+var myVar = 123
+var myVar2 = -454
+var mvVar3 = 0
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (number))
+  (variable_declaration
+    (identifier)
+    (number))
+  (variable_declaration
+    (identifier)
+    (number)))
+
+==============================================
+Booleans
+==============================================
+
+var myVar = false
+var myVar2 = true
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (boolean))
+  (variable_declaration
+    (identifier)
+    (boolean)))
+
+==============================================
+Arrays
+==============================================
+
+var myArray = [
+  5983
+  3923
+  -241
+]
+
+var myEmptyArray = [
+]
+
+var myMixedArray = [
+  myVariable
+  'hello!'
+  true
+  1255
+]
+
+---
+
+(infrastructure
+  (variable_declaration
+    (identifier)
+    (array
+      (number)
+      (number)
+      (number)))
+  (variable_declaration
+    (identifier)
+    (array))
+  (variable_declaration
+    (identifier)
+    (array
+      (identifier)
+      (string
+        (string_content))
+      (boolean)
+      (number))))
+
+==============================================
+Directive statements
+==============================================
+
+#disable-next-line no-unused-vars BCP138
+var foo = 'aaa'
+#disable-diagnostics no-unused-params BCP335
+#restore-diagnostics no-unused-params BCP335
+
+---
+
+(infrastructure
+  (directive_statement
+    (disable_next_line_directive
+      (directive_identifier)
+      (directive_identifier)))
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content)))
+  (directive_statement
+    (disable_diagnostics_directive
+      (directive_identifier)
+      (directive_identifier)))
+  (directive_statement
+    (restore_diagnostics_directive
+      (directive_identifier)
+      (directive_identifier))))
+
+==============================================
+Invalid directive with no identifiers
+==============================================
+
+#disable-next-line
+var foo = 'aaa'
+
+---
+
+(infrastructure
+  (ERROR)
+  (variable_declaration
+    (identifier)
+    (string
+      (string_content))))

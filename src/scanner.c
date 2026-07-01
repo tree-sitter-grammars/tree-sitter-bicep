@@ -27,9 +27,11 @@ unsigned tree_sitter_bicep_external_scanner_serialize(void *payload, char *buffe
 }
 
 void tree_sitter_bicep_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {
+    Scanner *scanner = (Scanner *)payload;
+    scanner->quote_before_end_count = 0;
+
     if (length == 1) {
-        Scanner *scanner = (Scanner *)payload;
-        scanner->quote_before_end_count = buffer[0];
+        scanner->quote_before_end_count = (uint8_t)buffer[0];
     }
 }
 
@@ -44,9 +46,7 @@ bool tree_sitter_bicep_external_scanner_scan(void *payload, TSLexer *lexer, cons
             advance(lexer);
             lexer->mark_end(lexer);
             lexer->result_symbol = EXTERNAL_ASTERISK;
-            if (lexer->lookahead == ':') {
-                return true;
-            }
+            return true;
         }
     }
 

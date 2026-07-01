@@ -146,6 +146,10 @@
         "named": true
       },
       {
+        "type": "directive_statement",
+        "named": true
+      },
+      {
         "type": "import_functionality",
         "named": true
       },
@@ -471,6 +475,59 @@
     }
   },
   {
+    "type": "directive_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "disable_diagnostics_directive",
+          "named": true
+        },
+        {
+          "type": "disable_next_line_directive",
+          "named": true
+        },
+        {
+          "type": "restore_diagnostics_directive",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "disable_diagnostics_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "disable_next_line_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "for_loop_parameters",
     "named": true,
     "fields": {},
@@ -767,7 +824,19 @@
           "named": true
         },
         {
-          "type": "expression",
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "member_expression",
+          "named": true
+        },
+        {
+          "type": "object",
+          "named": true
+        },
+        {
+          "type": "parameterized_type",
           "named": true
         },
         {
@@ -1040,6 +1109,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "restore_diagnostics_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_identifier",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -1334,10 +1418,6 @@
           "named": true
         },
         {
-          "type": "expression",
-          "named": true
-        },
-        {
           "type": "identifier",
           "named": true
         },
@@ -1468,6 +1548,18 @@
   },
   {
     "type": "!~",
+    "named": false
+  },
+  {
+    "type": "#disable-diagnostics",
+    "named": false
+  },
+  {
+    "type": "#disable-next-line",
+    "named": false
+  },
+  {
+    "type": "#restore-diagnostics",
     "named": false
   },
   {
@@ -1607,7 +1699,7 @@
     "named": true
   },
   {
-    "type": "diagnostic_comment",
+    "type": "directive_identifier",
     "named": true
   },
   {

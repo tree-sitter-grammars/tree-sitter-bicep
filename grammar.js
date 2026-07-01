@@ -6,9 +6,6 @@
  */
 
 // deno-lint-ignore-file ban-ts-comment
-/* eslint-disable arrow-parens */
-/* eslint-disable camelcase */
-/* eslint-disable-next-line spaced-comment */
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
@@ -45,11 +42,12 @@ module.exports = grammar({
   name: 'bicep',
 
   conflicts: $ => [
+    // argument lists and parenthesized expressions share the same delimiters
     [$.arguments, $.parenthesized_expression],
+    // resource<Type> and callable/member forms overlap during incremental parse
     [$.primary_expression, $.parameterized_type],
+    // some type literals and primary expressions start identically
     [$.primary_expression, $._type_not_union],
-    [$.primary_expression, $._type_not_union, $._lhs_expression],
-    [$.binary_expression, $.union_type],
     [$.type, $.union_type],
   ],
 
@@ -60,7 +58,6 @@ module.exports = grammar({
 
   extras: $ => [
     $.comment,
-    $.diagnostic_comment,
     /\s/,
   ],
 
@@ -87,6 +84,7 @@ module.exports = grammar({
 
     statement: $ => choice(
       $.decorators,
+      $.directive_statement,
       $.declaration,
       $.import_statement,
       $.import_with_statement,
@@ -113,7 +111,7 @@ module.exports = grammar({
       $.identifier,
       $.string,
       '=',
-      choice($.if_statement, $.object, $.for_statement),
+      choice(alias($.same_line_if_statement, $.if_statement), $.object, $.for_statement),
     ),
 
     import_statement: $ => seq(
@@ -144,6 +142,29 @@ module.exports = grammar({
 
     target_scope_assignment: $ => seq('targetScope', '=', $.string),
 
+    directive_statement: $ => choice(
+      $.disable_next_line_directive,
+      $.disable_diagnostics_directive,
+      $.restore_diagnostics_directive,
+    ),
+
+    disable_next_line_directive: $ => seq(
+      '#disable-next-line',
+      repeat1(seq(/[ \t]+/, $.directive_identifier)),
+    ),
+
+    disable_diagnostics_directive: $ => seq(
+      '#disable-diagnostics',
+      repeat1(seq(/[ \t]+/, $.directive_identifier)),
+    ),
+
+    restore_diagnostics_directive: $ => seq(
+      '#restore-diagnostics',
+      repeat1(seq(/[ \t]+/, $.directive_identifier)),
+    ),
+
+    directive_identifier: _ => /[a-zA-Z][a-zA-Z0-9-]*/,
+
     metadata_declaration: $ => seq(
       'metadata',
       $.identifier,
@@ -172,7 +193,7 @@ module.exports = grammar({
       $.string,
       optional('existing'),
       '=',
-      choice($.if_statement, $.object, $.for_statement),
+      choice(alias($.same_line_if_statement, $.if_statement), $.object, $.for_statement),
     ),
 
     type_declaration: $ => seq(
@@ -301,6 +322,11 @@ module.exports = grammar({
     ),
 
     if_statement: $ => seq('if', $.parenthesized_expression, $.object),
+    same_line_if_statement: $ => seq(
+      alias(token.immediate(/[ \t]*if/), 'if'),
+      $.parenthesized_expression,
+      $.object,
+    ),
 
     _lhs_expression: $ => prec(-1, choice(
       $.member_expression,
@@ -495,9 +521,12 @@ module.exports = grammar({
     array_type: $ => seq($.type, '[', ']'),
     nullable_type: $ => seq(
       choice(
-        $.expression,
+        $.identifier,
         $.primitive_type,
         $.array_type,
+        $.object,
+        $.member_expression,
+        $.parameterized_type,
         $.parenthesized_type,
       ),
       choice('!', prec(-1, '?')),
@@ -506,16 +535,10 @@ module.exports = grammar({
     negated_type: $ => prec.right(seq('!', $.type)),
 
     union_type: $ => prec.right(seq(
-      optional(choice(
-        prec(2, $._type_not_union),
-        $.expression,
-      )),
+      prec(2, $._type_not_union),
       repeat1(prec.right(1, seq(
         '|',
-        choice(
-          prec(2, $._type_not_union),
-          $.expression,
-        ),
+        prec(2, $._type_not_union),
       ))),
     )),
 
@@ -542,7 +565,6 @@ module.exports = grammar({
         '/',
       ),
     )),
-    diagnostic_comment: _ => token(prec(-1, seq('#', /.*/))),
   },
 });
 
@@ -550,9 +572,7 @@ module.exports = grammar({
  * Creates a rule to optionally match one or more of the rules separated by a comma
  *
  * @param {Rule} rule
- *
- * @return {ChoiceRule}
- *
+ * @returns {ChoiceRule}
  */
 function commaSep(rule) {
   return optional(commaSep1(rule));
@@ -562,9 +582,7 @@ function commaSep(rule) {
  * Creates a rule to match one or more of the rules separated by a comma
  *
  * @param {Rule} rule
- *
- * @return {SeqRule}
- *
+ * @returns {SeqRule}
  */
 function commaSep1(rule) {
   return seq(rule, repeat(seq(',', rule)));
@@ -574,9 +592,7 @@ function commaSep1(rule) {
  * Creates a rule to match one or more of the rules optionally separated by a comma
  *
  * @param {Rule} rule
- *
- * @return {SeqRule}
- *
+ * @returns {SeqRule}
  */
 function optionalCommaSep1(rule) {
   return seq(rule, repeat(seq(optional(','), rule)), optional(','));
@@ -586,9 +602,7 @@ function optionalCommaSep1(rule) {
  * Creates a rule to optionally match one or more of the rules optionally separated by a comma
  *
  * @param {Rule} rule
- *
- * @return {ChoiceRule}
- *
+ * @returns {ChoiceRule}
  */
 function optionalCommaSep(rule) {
   return optional(optionalCommaSep1(rule));

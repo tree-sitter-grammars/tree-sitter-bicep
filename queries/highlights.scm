@@ -117,6 +117,17 @@
 ; Conditionals
 "if" @keyword.conditional
 
+(disable_next_line_directive
+  "#disable-next-line" @keyword.directive)
+
+(disable_diagnostics_directive
+  "#disable-diagnostics" @keyword.directive)
+
+(restore_diagnostics_directive
+  "#restore-diagnostics" @keyword.directive)
+
+(directive_identifier) @constant
+
 (ternary_expression
   "?" @keyword.conditional.ternary
   ":" @keyword.conditional.ternary)
@@ -230,5 +241,4 @@
 ; Comments
 [
   (comment)
-  (diagnostic_comment)
 ] @comment @spell
