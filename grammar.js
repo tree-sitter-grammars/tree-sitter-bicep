@@ -551,8 +551,7 @@ module.exports = grammar({
  *
  * @param {Rule} rule
  *
- * @return {ChoiceRule}
- *
+ * @returns {ChoiceRule}
  */
 function commaSep(rule) {
   return optional(commaSep1(rule));
@@ -563,8 +562,7 @@ function commaSep(rule) {
  *
  * @param {Rule} rule
  *
- * @return {SeqRule}
- *
+ * @returns {SeqRule}
  */
 function commaSep1(rule) {
   return seq(rule, repeat(seq(',', rule)));
@@ -575,8 +573,7 @@ function commaSep1(rule) {
  *
  * @param {Rule} rule
  *
- * @return {SeqRule}
- *
+ * @returns {SeqRule}
  */
 function optionalCommaSep1(rule) {
   return seq(rule, repeat(seq(optional(','), rule)), optional(','));
@@ -587,8 +584,7 @@ function optionalCommaSep1(rule) {
  *
  * @param {Rule} rule
  *
- * @return {ChoiceRule}
- *
+ * @returns {ChoiceRule}
  */
 function optionalCommaSep(rule) {
   return optional(optionalCommaSep1(rule));

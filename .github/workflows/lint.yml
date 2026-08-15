@@ -3,20 +3,18 @@ name: Lint
 on:
   push:
     branches: [master]
-    paths:
-      - grammar.js
   pull_request:
-    paths:
-      - grammar.js
+  workflow_dispatch:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           cache: npm
           node-version: ${{vars.NODE_VERSION}}
@@ -24,3 +22,15 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Run ESLint
         run: npm run lint
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+      - name: Install yamllint
+        run: python -m pip install yamllint==1.37.1
+      - name: Run yamllint
+        run: >-
+          yamllint -d '{extends: relaxed, rules: {line-length: disable,
+          document-start: disable, truthy: disable}}' .github/workflows
+      - name: Run actionlint
+        uses: reviewdog/action-actionlint@d63ba7532e0942965320cd8d73cbae4c7b3c5283 # v1.73.1
+        with:
+          fail_level: error

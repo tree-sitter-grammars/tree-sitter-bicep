@@ -1,0 +1,35 @@
+name: Queries
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  queries:
+    name: Queries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@49f8c1f20b60102eae8c033bb7c7f6cd056f6086 # v2
+      - name: Build parser
+        run: tree-sitter build --output tree-sitter-bicep.so
+      - name: Install ts_query_ls
+        run: |
+          curl --fail --location --silent --show-error \
+            https://github.com/ribru17/ts_query_ls/releases/download/v3.16.0/ts_query_ls-x86_64-unknown-linux-gnu.tar.gz \
+            --output ts_query_ls.tar.gz
+          echo "35859176141c3ebaac231000fd96d50a14c6bc26963f0a1662aac33f656d443d  ts_query_ls.tar.gz" | sha256sum --check
+          tar --extract --file ts_query_ls.tar.gz
+          chmod +x ts_query_ls
+      - name: Validate queries
+        run: >-
+          ./ts_query_ls check queries --format
+          --config '{"parser_install_directories": ["."]}'
